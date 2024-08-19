@@ -207,3 +207,5 @@ target_sources(
     "src/TrackListTrackScaleView.h"
     "src/TrackListTrackTimeView.h"
 )
+
+add_subdirectory("SekaijuRes")
