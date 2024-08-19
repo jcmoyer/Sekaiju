@@ -34,3 +34,9 @@ Download from https://openmidiproject.opal.ne.jp/MIDIStatusLibrary_en.html.
 Extract the folder to our root directory and remove the suffix and version
 number (e.g. MIDIStatus8.0 becomes MIDIStatus).
 
+## MIDIInstrumentLibrary
+
+Download from https://openmidiproject.opal.ne.jp/MIDIInstrumentLibrary_en.html.
+
+Extract the folder to our root directory and remove the suffix and version
+number (e.g. MIDIInstrument8.0 becomes MIDIInstrument).
