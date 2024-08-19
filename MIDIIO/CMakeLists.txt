@@ -1,5 +1,7 @@
 add_library(MIDIIO)
 
+target_link_libraries(MIDIIO PUBLIC winmm)
+
 target_sources(
     MIDIIO
 
