@@ -27,4 +27,10 @@ Download from https://openmidiproject.opal.ne.jp/MIDIClockLibrary_en.html.
 Extract the folder to our root directory and remove the suffix and version
 number (e.g. MIDIClockLib8.0 becomes MIDIClock).
 
+## MIDIStatusLibrary
+
+Download from https://openmidiproject.opal.ne.jp/MIDIStatusLibrary_en.html.
+
+Extract the folder to our root directory and remove the suffix and version
+number (e.g. MIDIStatus8.0 becomes MIDIStatus).
 
