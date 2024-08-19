@@ -18,6 +18,8 @@ target_sources(
 
     PRIVATE
 
+    "src/Sekaiju.rc"
+
     "src/AboutDlg.cpp"
     "src/AutoSaveDlg.cpp"
     "src/ChildFrame.cpp"
