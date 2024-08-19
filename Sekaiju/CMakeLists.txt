@@ -6,6 +6,7 @@ target_link_libraries(Sekaiju PRIVATE MIDIIO)
 target_link_libraries(Sekaiju PRIVATE MIDIData)
 target_link_libraries(Sekaiju PRIVATE MIDIClock)
 target_link_libraries(Sekaiju PRIVATE MIDIStatus)
+target_link_libraries(Sekaiju PRIVATE MIDIInstrument)
 
 target_sources(
     Sekaiju
