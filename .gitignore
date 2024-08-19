@@ -2,6 +2,14 @@
 *.exe
 *.dll
 
+# Build artifacts
+*.exp
+*.lib
+*.obj
+*.pdb
+*.ilk
+*.idb
+
 # Visual Studio files
 *.sln
 *.vcxproj
@@ -10,3 +18,4 @@
 
 # Upstream documentation - we do not maintain this
 Sekaiju/docs
+MIDIIO/docs
