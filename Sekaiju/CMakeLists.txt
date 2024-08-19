@@ -3,6 +3,7 @@ add_executable(Sekaiju)
 set(CMAKE_MFC_FLAG 2)
 
 target_link_libraries(Sekaiju PRIVATE MIDIIO)
+target_link_libraries(Sekaiju PRIVATE MIDIData)
 
 target_sources(
     Sekaiju
