@@ -2,6 +2,9 @@ add_executable(Sekaiju)
 
 set(CMAKE_MFC_FLAG 2)
 
+# Required for some ATL string code
+target_compile_definitions(Sekaiju PRIVATE -DUNICODE)
+
 target_link_libraries(Sekaiju PRIVATE MIDIIO)
 target_link_libraries(Sekaiju PRIVATE MIDIData)
 target_link_libraries(Sekaiju PRIVATE MIDIClock)
