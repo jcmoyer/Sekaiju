@@ -1,9 +1,10 @@
-add_executable(Sekaiju)
-
 set(CMAKE_MFC_FLAG 2)
 
-# Required for some ATL string code
-target_compile_definitions(Sekaiju PRIVATE -DUNICODE)
+add_executable(Sekaiju WIN32)
+
+# https://gitlab.kitware.com/cmake/cmake/-/issues/21202
+target_compile_definitions(Sekaiju PRIVATE _AFXDLL _UNICODE UNICODE)
+target_link_options(Sekaiju PRIVATE "/entry:wWinMainCRTStartup")
 
 target_link_libraries(Sekaiju PRIVATE MIDIIO)
 target_link_libraries(Sekaiju PRIVATE MIDIData)
