@@ -1,0 +1,59 @@
+//******************************************************************************
+// MIDIシーケンサーソフト『世界樹』
+// リソーススクリプトファイル
+// (C)2002-2024 おーぷんMIDIぷろじぇくと／くず
+//******************************************************************************
+
+/* This Source Code Form is subject to the terms of the Mozilla Public */
+/* License, v. 2.0. If a copy of the MPL was not distributed with this */
+/* file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+// 警告：このファイルはVisualC++のリソースエディタで編集しないでください。
+// 警告：このファイルはテキストエディタで編集してください。
+
+#include "afxwin.h"
+#include "resource.h"
+#include <afxres.h>
+
+//-----------------------------------------------------------------------------
+// アイコン
+//-----------------------------------------------------------------------------
+
+// アプリケーションのアイコンをすべてのシステム上で維持するために、最も小さい
+// ID 値のアイコンが最初に配置されます。
+IDR_MAINFRAME           ICON    DISCARDABLE      "..\\res\\MainFrame.ico"
+IDR_SEKAIJUTYPE         ICON    DISCARDABLE      "..\\res\\SekaijuType.ico"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 0,0,0,0
+PRODUCTVERSION 0,0,0,0
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+FILEFLAGS 0x1L
+#else
+FILEFLAGS 0x0L
+#endif
+FILEOS 0x4L
+FILETYPE 0x1L
+FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041104B0"
+        BEGIN
+            VALUE "CompanyName", "openmidiproject\0"
+            VALUE "FileDescription", "MIDI Sequencer Software\0"
+            VALUE "FileVersion", "0, 0, 0, 0\0"
+            VALUE "InternalName", "Sekaiju\0"
+            VALUE "LegalCopyright", "(C) 2000-2024 kuzu\0"
+            VALUE "LegalTrademarks", "\0"
+//            VALUE "OriginalFilename", "Sekaiju.exe\0"
+            VALUE "ProductName", "Sekaiju\0"
+            VALUE "ProductVersion", "0, 0, 0, 0\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END

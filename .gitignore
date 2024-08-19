@@ -1,0 +1,12 @@
+# Binary files
+*.exe
+*.dll
+
+# Visual Studio files
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Upstream documentation - we do not maintain this
+Sekaiju/docs
