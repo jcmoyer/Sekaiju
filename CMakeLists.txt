@@ -4,4 +4,5 @@ project(Sekaiju)
 
 add_subdirectory("MIDIIO")
 add_subdirectory("MIDIData")
+add_subdirectory("MIDIClock")
 add_subdirectory("Sekaiju")
