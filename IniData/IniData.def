@@ -1,0 +1,13 @@
+
+;LIBRARY DIB
+
+EXPORTS 
+
+	IniData_Create
+	IniData_Delete
+	IniData_Load
+	IniData_Save 
+	IniData_SetString
+	IniData_SetIntPtr
+	IniData_GetString
+	IniData_GetIntPtr
