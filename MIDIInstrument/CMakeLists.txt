@@ -1,4 +1,4 @@
-add_library(MIDIInstrument)
+add_library(MIDIInstrument SHARED)
 
 # MIDIInstrument.c is missing an include for <crtdbg.h>
 # This is the least invasive way to work around the problem.
@@ -19,4 +19,5 @@ target_sources(
     PUBLIC
 
     MIDIInstrument.h
+    MIDIInstrument.def
 )

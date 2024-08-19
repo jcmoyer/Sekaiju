@@ -1,4 +1,4 @@
-add_library(MIDIIO)
+add_library(MIDIIO SHARED)
 
 target_link_libraries(MIDIIO PUBLIC winmm)
 
@@ -12,4 +12,5 @@ target_sources(
     PUBLIC
 
     MIDIIO.h
+    MIDIIO.def
 )

@@ -1,4 +1,4 @@
-add_library(MIDIData)
+add_library(MIDIData SHARED)
 
 target_sources(
     MIDIData
@@ -10,4 +10,5 @@ target_sources(
     PUBLIC
 
     MIDIData.h
+    MIDIData.def
 )

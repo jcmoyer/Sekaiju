@@ -1,4 +1,4 @@
-add_library(IniData)
+add_library(IniData SHARED)
 
 target_sources(
     IniData
@@ -12,4 +12,5 @@ target_sources(
 
     IniData.h
     PtrArray.h
+    IniData.def
 )

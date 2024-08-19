@@ -1,4 +1,4 @@
-add_library(MIDIClock)
+add_library(MIDIClock SHARED)
 
 target_link_libraries(MIDIClock PUBLIC winmm)
 
@@ -12,4 +12,5 @@ target_sources(
     PUBLIC
 
     MIDIClock.h
+    MIDIClock.def
 )

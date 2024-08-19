@@ -1,4 +1,4 @@
-add_library(MIDIStatus)
+add_library(MIDIStatus SHARED)
 
 target_sources(
     MIDIStatus
@@ -10,4 +10,5 @@ target_sources(
     PUBLIC
 
     MIDIStatus.h
+    MIDIStatus.def
 )
