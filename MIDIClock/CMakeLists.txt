@@ -1,5 +1,7 @@
 add_library(MIDIClock)
 
+target_link_libraries(MIDIClock PUBLIC winmm)
+
 target_sources(
     MIDIClock
 
