@@ -17,6 +17,7 @@ instead.
 The `master` branch additionally includes the following QOL features:
 
 - Ctrl+Up/Down transposes selected notes by an octave
+- Roland SC-55 instrument file is included as part of the distribution
 
 # Building
 
