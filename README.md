@@ -10,6 +10,14 @@ openmidiproject.
 This repository differs from upstream in that it aims to provide an easy way to
 build Sekaiju and its dependencies and to produce a distribution.
 
+The `upstream` branch is a mirror of upstream without MSVC projects, docs, or
+binaries. The sources are unmodified and this branch uses cmake to build
+instead.
+
+The `master` branch additionally includes the following QOL features:
+
+- Ctrl+Up/Down transposes selected notes by an octave
+
 # Building
 
 Requires MSVC, MFC, ATL, and cmake.
