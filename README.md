@@ -44,7 +44,8 @@ number (e.g. MIDIIOLib8.0 becomes MIDIIO).
 
 Download from https://openmidiproject.opal.ne.jp/MIDIDataLibrary_en.html.
 
-Extract the folder to our root directory and remove the suffix and version number (e.g. MIDIDataLib8.0 becomes MIDIData).
+Extract the folder to our root directory and remove the suffix and version
+number (e.g. MIDIDataLib8.0 becomes MIDIData).
 
 ## MIDIClockLibrary
 
