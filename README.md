@@ -1,3 +1,29 @@
+# Sekaiju
+
+This repository hosts an *unofficial* mono-repo version of Sekaiju, an open
+source MIDI sequencer. You can find more information at the [project
+website](https://openmidiproject.opal.ne.jp/Sekaiju_en.html).
+
+This repository is *NOT* an official source and is *NOT* affiliated with
+openmidiproject.
+
+This repository differs from upstream in that it aims to provide an easy way to
+build Sekaiju and its dependencies and to produce a distribution.
+
+# Building
+
+Requires MSVC, MFC, ATL, and cmake.
+
+To produce a complete working build of Sekaiju at `<path>`:
+
+```
+git clone git@github.com:jcmoyer/Sekaiju.git && cd Sekaiju
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build .
+cmake --install . --prefix=<path>
+```
+
 # Steps for merging upstream
 
 ## Sekaiju
