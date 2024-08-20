@@ -188,6 +188,7 @@ public:
 
 	virtual void ApplySelectVoiceDlg (CDialog* pDlg);
 
+	void TransposeSelectedNotes(long amount, bool note_on_off, bool key_after_touch);
 
 	//--------------------------------------------------------------------------
 	// メッセージマップ

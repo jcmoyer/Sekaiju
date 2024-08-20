@@ -5982,6 +5982,44 @@ void CSekaijuDoc::OnUpdateEditChannelUI (CCmdUI* pCmdUI) {
 	::Sleep (0);
 }
 
+void CSekaijuDoc::TransposeSelectedNotes (long amount, bool note_on_off, bool key_after_touch) {
+	m_theCriticalSection.Lock();
+	MIDITrack* pMIDITrack = NULL;
+	MIDIEvent* pMIDIEvent = NULL;
+	MIDIEvent* pCloneEvent = NULL;
+	CHistoryUnit* pCurHistoryUnit = NULL;
+	CString strHistoryName;
+	VERIFY(strHistoryName.LoadString(IDS_EDIT_MODIFY_KEY));
+	VERIFY(this->AddHistoryUnit(strHistoryName));
+	VERIFY(pCurHistoryUnit = this->GetCurHistoryUnit());
+	// 音程の変更
+	forEachTrack(m_pMIDIData, pMIDITrack) {
+		forEachEvent(pMIDITrack, pMIDIEvent) {
+			// 選択されているイベントのみ
+			if (this->IsEventSelected(pMIDIEvent)) {
+				// ノートオン・ノートオフ(非結合)・キーアフタータッチのみ
+				if ((MIDIEvent_IsNoteOn(pMIDIEvent) && pMIDIEvent->m_pPrevCombinedEvent == NULL ||
+					MIDIEvent_IsNoteOff(pMIDIEvent) && pMIDIEvent->m_pPrevCombinedEvent == NULL) &&
+					note_on_off ||
+					MIDIEvent_IsKeyAftertouch(pMIDIEvent) &&
+					key_after_touch) {
+					VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_REMOVEEVENT, pMIDIEvent));
+					VERIFY(pCloneEvent = ReplaceMIDIEvent(pMIDIEvent));
+					long lKey = MIDIEvent_GetKey(pCloneEvent);
+					lKey += amount;
+					lKey = CLIP(0, lKey, 127);
+					VERIFY(MIDIEvent_SetKey(pCloneEvent, lKey));
+					VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_INSERTEVENT, pCloneEvent));
+					pMIDIEvent = pCloneEvent;
+				}
+			}
+		}
+	}
+	this->SetModifiedFlag(TRUE);
+	this->UpdateAllViews(NULL, SEKAIJUDOC_MIDIEVENTCHANGED);
+	m_theCriticalSection.Unlock();
+}
+
 // 『編集(E)』-『音程の変更...』
 void CSekaijuDoc::OnEditKey () {
 

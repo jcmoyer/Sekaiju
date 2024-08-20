@@ -1959,7 +1959,11 @@ void CPianoRollFrame::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags) {
 	// ↑
 	case VK_UP:
 		if (GetCapture () == NULL) {
-			if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
+			if (GetKeyState(VK_CONTROL) < 0) {
+				CSekaijuDoc* pSekaijuDoc = GetDocument();
+				pSekaijuDoc->TransposeSelectedNotes(12, true, true);
+			}
+			else if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
 				this->PostMessage (WM_VSCROLL, (WPARAM)SB_LINEUP, 
 					(LPARAM)(m_wndKeyScroll.GetSafeHwnd ()));
 				this->PostMessage (WM_SETFOCUS, (WPARAM)pOldFocus->GetSafeHwnd ());
@@ -1974,7 +1978,11 @@ void CPianoRollFrame::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags) {
 	// ↓
 	case VK_DOWN:
 		if (GetCapture () == NULL) {
-			if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
+			if (GetKeyState(VK_CONTROL) < 0) {
+				CSekaijuDoc* pSekaijuDoc = GetDocument();
+				pSekaijuDoc->TransposeSelectedNotes(-12, true, true);
+			}
+			else if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
 				this->PostMessage (WM_VSCROLL, (WPARAM)SB_LINEDOWN, 
 					(LPARAM)(m_wndKeyScroll.GetSafeHwnd ()));
 				this->PostMessage (WM_SETFOCUS, (WPARAM)pOldFocus->GetSafeHwnd ());
