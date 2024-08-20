@@ -1,5 +1,7 @@
 add_library(IniData SHARED)
 
+target_compile_definitions(IniData PRIVATE _UNICODE UNICODE)
+
 target_sources(
     IniData
 
