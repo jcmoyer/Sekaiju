@@ -177,6 +177,8 @@ BEGIN_MESSAGE_MAP(CPianoRollFrame, CChildFrame)
 	ON_COMMAND(ID_PIANOROLL_DIATONIC_TRANSPOSE_DOWN, OnPianoRollDiatonicTransposeDown)
 	ON_COMMAND(ID_PIANOROLL_OCTAVE_TRANSPOSE_UP, OnPianoRollOctaveTransposeUp)
 	ON_COMMAND(ID_PIANOROLL_OCTAVE_TRANSPOSE_DOWN, OnPianoRollOctaveTransposeDown)
+	ON_COMMAND(ID_PIANOROLL_CHROMATIC_TRANSPOSE_UP, OnPianoRollChromaticTransposeUp)
+	ON_COMMAND(ID_PIANOROLL_CHROMATIC_TRANSPOSE_DOWN, OnPianoRollChromaticTransposeDown)
 
 	ON_COMMAND (ID_POPUP_TRACKVISIBLEON, OnPopupTrackVisibleOn)
 	ON_UPDATE_COMMAND_UI (ID_POPUP_TRACKVISIBLEON, OnUpdatePopupTrackVisibleOnUI)
@@ -2632,6 +2634,16 @@ void CPianoRollFrame::OnPianoRollOctaveTransposeUp() {
 void CPianoRollFrame::OnPianoRollOctaveTransposeDown() {
 	CSekaijuDoc* pSekaijuDoc = GetDocument();
 	pSekaijuDoc->TransposeSelectedNotes(-12, true, true);
+}
+
+void CPianoRollFrame::OnPianoRollChromaticTransposeUp() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->TransposeSelectedNotes(1, true, true);
+}
+
+void CPianoRollFrame::OnPianoRollChromaticTransposeDown() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->TransposeSelectedNotes(-1, true, true);
 }
 
 // トラックコンボが選択され終わった時
