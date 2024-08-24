@@ -175,6 +175,8 @@ BEGIN_MESSAGE_MAP(CPianoRollFrame, CChildFrame)
 	ON_UPDATE_COMMAND_UI (ID_PIANOROLL_AUTOPAGEUPDATE, OnUpdatePianoRollAutoPageUpdateUI)
 	ON_COMMAND(ID_PIANOROLL_DIATONIC_TRANSPOSE_UP, OnPianoRollDiatonicTransposeUp)
 	ON_COMMAND(ID_PIANOROLL_DIATONIC_TRANSPOSE_DOWN, OnPianoRollDiatonicTransposeDown)
+	ON_COMMAND(ID_PIANOROLL_OCTAVE_TRANSPOSE_UP, OnPianoRollOctaveTransposeUp)
+	ON_COMMAND(ID_PIANOROLL_OCTAVE_TRANSPOSE_DOWN, OnPianoRollOctaveTransposeDown)
 
 	ON_COMMAND (ID_POPUP_TRACKVISIBLEON, OnPopupTrackVisibleOn)
 	ON_UPDATE_COMMAND_UI (ID_POPUP_TRACKVISIBLEON, OnUpdatePopupTrackVisibleOnUI)
@@ -1961,11 +1963,7 @@ void CPianoRollFrame::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags) {
 	// ↑
 	case VK_UP:
 		if (GetCapture () == NULL) {
-			if (GetKeyState(VK_CONTROL) < 0) {
-				CSekaijuDoc* pSekaijuDoc = GetDocument();
-				pSekaijuDoc->TransposeSelectedNotes(12, true, true);
-			}
-			else if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
+			if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
 				this->PostMessage (WM_VSCROLL, (WPARAM)SB_LINEUP, 
 					(LPARAM)(m_wndKeyScroll.GetSafeHwnd ()));
 				this->PostMessage (WM_SETFOCUS, (WPARAM)pOldFocus->GetSafeHwnd ());
@@ -1980,11 +1978,7 @@ void CPianoRollFrame::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags) {
 	// ↓
 	case VK_DOWN:
 		if (GetCapture () == NULL) {
-			if (GetKeyState(VK_CONTROL) < 0) {
-				CSekaijuDoc* pSekaijuDoc = GetDocument();
-				pSekaijuDoc->TransposeSelectedNotes(-12, true, true);
-			}
-			else if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
+			if (GetFocus () == m_pKeyScaleView || GetFocus () == m_pKeyTimeView) {
 				this->PostMessage (WM_VSCROLL, (WPARAM)SB_LINEDOWN, 
 					(LPARAM)(m_wndKeyScroll.GetSafeHwnd ()));
 				this->PostMessage (WM_SETFOCUS, (WPARAM)pOldFocus->GetSafeHwnd ());
@@ -2628,6 +2622,16 @@ void CPianoRollFrame::OnPianoRollDiatonicTransposeUp() {
 void CPianoRollFrame::OnPianoRollDiatonicTransposeDown() {
 	CSekaijuDoc* pSekaijuDoc = GetDocument();
 	pSekaijuDoc->DiatonicTransposeSelectedNotes(-1, true, true);
+}
+
+void CPianoRollFrame::OnPianoRollOctaveTransposeUp() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->TransposeSelectedNotes(12, true, true);
+}
+
+void CPianoRollFrame::OnPianoRollOctaveTransposeDown() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->TransposeSelectedNotes(-12, true, true);
 }
 
 // トラックコンボが選択され終わった時
