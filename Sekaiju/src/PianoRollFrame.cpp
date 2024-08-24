@@ -173,6 +173,8 @@ BEGIN_MESSAGE_MAP(CPianoRollFrame, CChildFrame)
 	ON_UPDATE_COMMAND_UI (ID_PIANOROLL_SHOWALLGRAPH, OnUpdatePianoRollShowAllGraphUI)
 	ON_COMMAND (ID_PIANOROLL_AUTOPAGEUPDATE, OnPianoRollAutoPageUpdate)
 	ON_UPDATE_COMMAND_UI (ID_PIANOROLL_AUTOPAGEUPDATE, OnUpdatePianoRollAutoPageUpdateUI)
+	ON_COMMAND(ID_PIANOROLL_DIATONIC_TRANSPOSE_UP, OnPianoRollDiatonicTransposeUp)
+	ON_COMMAND(ID_PIANOROLL_DIATONIC_TRANSPOSE_DOWN, OnPianoRollDiatonicTransposeDown)
 
 	ON_COMMAND (ID_POPUP_TRACKVISIBLEON, OnPopupTrackVisibleOn)
 	ON_UPDATE_COMMAND_UI (ID_POPUP_TRACKVISIBLEON, OnUpdatePopupTrackVisibleOnUI)
@@ -2616,6 +2618,16 @@ void CPianoRollFrame::OnPianoRollAutoPageUpdate () {
 // 『ツール(&T)』-『自動ページ更新』
 void CPianoRollFrame::OnUpdatePianoRollAutoPageUpdateUI (CCmdUI* pCmdUI) {
 	pCmdUI->SetCheck (m_bAutoPageUpdate);
+}
+
+void CPianoRollFrame::OnPianoRollDiatonicTransposeUp() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->DiatonicTransposeSelectedNotes(1, true, true);
+}
+
+void CPianoRollFrame::OnPianoRollDiatonicTransposeDown() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->DiatonicTransposeSelectedNotes(-1, true, true);
 }
 
 // トラックコンボが選択され終わった時

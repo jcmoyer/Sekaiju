@@ -203,6 +203,8 @@ protected:
 	afx_msg void OnUpdatePianoRollShowAllGraphUI (CCmdUI* pCmdUI);
 	afx_msg void OnPianoRollAutoPageUpdate ();
 	afx_msg void OnUpdatePianoRollAutoPageUpdateUI (CCmdUI* pCmdUI);
+	afx_msg void OnPianoRollDiatonicTransposeUp();
+	afx_msg void OnPianoRollDiatonicTransposeDown();
 
 	afx_msg void OnTrackComboSelEndOK ();	
 	afx_msg void OnTrackListChkChange ();

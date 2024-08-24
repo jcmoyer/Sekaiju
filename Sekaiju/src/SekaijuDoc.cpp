@@ -64,6 +64,8 @@
 
 #include "SAL.h"
 
+#include <vector>
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -6018,6 +6020,158 @@ void CSekaijuDoc::TransposeSelectedNotes (long amount, bool note_on_off, bool ke
 	this->SetModifiedFlag(TRUE);
 	this->UpdateAllViews(NULL, SEKAIJUDOC_MIDIEVENTCHANGED);
 	m_theCriticalSection.Unlock();
+}
+
+enum class KeyName {
+    C      = 0,
+    CSharp = 1,
+    D      = 2,
+    DSharp = 3,
+    E      = 4,
+    F      = 5,
+    FSharp = 6,
+    G      = 7,
+    GSharp = 8,
+    A      = 9,
+    ASharp = 10,
+    B      = 11,
+
+    // enharmonic names
+    CFlat  = B,
+    AFlat  = GSharp,
+    GFlat  = FSharp,
+    EFlat  = DSharp,
+    DFlat  = CSharp,
+    BFlat  = ASharp,
+};
+
+KeyName MidiNoteToKeyName(int note) {
+    return (KeyName)(note % 12);
+}
+
+KeyName ChromaticTransposeKey(KeyName key, int semitones) {
+    return (KeyName)(((int)key + semitones) % 12);
+}
+
+const KeyName KEYSIG_TONIC_TABLE[15][2]{
+	// 7b
+	{KeyName::CFlat,  KeyName::AFlat},
+	// 6b
+	{KeyName::GFlat,  KeyName::EFlat},
+	// 5b
+	{KeyName::DFlat,  KeyName::BFlat},
+	// 4b
+	{KeyName::AFlat,  KeyName::F},
+	// 3b
+	{KeyName::EFlat,  KeyName::C},
+	// 2b
+	{KeyName::BFlat,  KeyName::G},
+	// 1b
+	{KeyName::F,      KeyName::D},
+	// 0b/#
+	{KeyName::C,      KeyName::A},
+	// 1#
+	{KeyName::G,      KeyName::E},
+	// 2#
+	{KeyName::D,      KeyName::B},
+	// 3#
+	{KeyName::A,      KeyName::FSharp},
+	// 4#
+	{KeyName::E,      KeyName::CSharp},
+	// 5#
+	{KeyName::B,      KeyName::GSharp},
+	// 6#
+	{KeyName::FSharp, KeyName::DSharp},
+	// 7#
+	{KeyName::CSharp, KeyName::ASharp},
+};
+
+KeyName MidiKeySignatureToTonic(int sharps_flats, int major_minor) {
+    VERIFY(sharps_flats >= -7 && sharps_flats <= 7);
+    VERIFY(major_minor >= 0 && major_minor <= 1);
+    return KEYSIG_TONIC_TABLE[sharps_flats + 7][major_minor];
+}
+
+const int MAJOR_INTERVALS[]{
+    2, 2, 1, 2, 2, 2, 1,
+};
+
+const int MINOR_INTERVALS[]{
+    2, 1, 2, 2, 1, 2, 2,
+};
+
+// TODO: use span here, need to fix a bunch of non-compliant code in other files to enable c++20 first
+int FindScaleDegree(KeyName tonic, KeyName note, const int* scale_intervals, size_t scale_intervals_size) {
+    int semitones = 0;
+    for (int degree = 0; degree < (int)scale_intervals_size; ++degree) {
+        if (ChromaticTransposeKey(tonic, semitones) == note) {
+            return degree;
+        }
+        semitones += scale_intervals[degree];
+    }
+    return -1;
+}
+
+void CSekaijuDoc::DiatonicTransposeSelectedNotes(long amount, bool note_on_off, bool key_after_touch) {
+    m_theCriticalSection.Lock();
+    MIDITrack* pMIDITrack = NULL;
+    MIDIEvent* pMIDIEvent = NULL;
+    MIDIEvent* pCloneEvent = NULL;
+    CHistoryUnit* pCurHistoryUnit = NULL;
+    CString strHistoryName;
+    VERIFY(strHistoryName.LoadString(IDS_EDIT_MODIFY_KEY));
+    VERIFY(this->AddHistoryUnit(strHistoryName));
+    VERIFY(pCurHistoryUnit = this->GetCurHistoryUnit());
+
+    std::vector<MIDIEvent*> clone_events;
+
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        forEachEvent(pMIDITrack, pMIDIEvent) {
+            if (this->IsEventSelected(pMIDIEvent)) {
+                if ((MIDIEvent_IsNoteOn(pMIDIEvent) && pMIDIEvent->m_pPrevCombinedEvent == NULL ||
+                    MIDIEvent_IsNoteOff(pMIDIEvent) && pMIDIEvent->m_pPrevCombinedEvent == NULL) &&
+                    note_on_off ||
+                    MIDIEvent_IsKeyAftertouch(pMIDIEvent) &&
+                    key_after_touch) {
+                    VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_REMOVEEVENT, pMIDIEvent));
+                    VERIFY(pCloneEvent = ReplaceMIDIEvent(pMIDIEvent));
+                    clone_events.push_back(pCloneEvent);
+                    VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_INSERTEVENT, pCloneEvent));
+                    pMIDIEvent = pCloneEvent;
+                }
+            }
+        }
+    }
+
+    for (MIDIEvent* e : clone_events) {
+        // key signature can be different per note, so we have to find the corresponding sig for each
+        long lsf, lmi;
+        MIDIData_FindKeySignature(m_pMIDIData, e->m_lTime, &lsf, &lmi);
+
+        KeyName tonic = MidiKeySignatureToTonic(lsf, lmi);
+        long lKey = MIDIEvent_GetKey(e);
+
+        KeyName event_key = MidiNoteToKeyName(lKey);
+
+        // TODO: yes this is gross, will fix it later; see above TODO
+        const int* interval_array = lmi == 0 ? MAJOR_INTERVALS : MINOR_INTERVALS;
+        long deg = FindScaleDegree(tonic, event_key, interval_array, 7);
+
+        if (deg >= 0) {
+            if (amount > 0) {
+                lKey += interval_array[deg];
+            }
+            else {
+                lKey -= interval_array[deg - 1 >= 0 ? deg - 1 : 6];
+            }
+            VERIFY(MIDIEvent_SetKey(e, lKey));
+        }
+        // TODO: if a selected note isn't in the scale, what should we do?
+    }
+
+    this->SetModifiedFlag(TRUE);
+    this->UpdateAllViews(NULL, SEKAIJUDOC_MIDIEVENTCHANGED);
+    m_theCriticalSection.Unlock();
 }
 
 // 『編集(E)』-『音程の変更...』
