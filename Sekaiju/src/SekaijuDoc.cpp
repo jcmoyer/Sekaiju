@@ -6174,6 +6174,97 @@ void CSekaijuDoc::DiatonicTransposeSelectedNotes(long amount, bool note_on_off, 
     m_theCriticalSection.Unlock();
 }
 
+void CSekaijuDoc::ShiftSelectedNotes(long amount) {
+    CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp();
+    m_theCriticalSection.Lock();
+    MIDITrack* pMIDITrack = NULL;
+    MIDIEvent* pMIDIEvent = NULL;
+    MIDIEvent* pCloneEvent = NULL;
+    CHistoryUnit* pCurHistoryUnit = NULL;
+    CString strHistoryName;
+    VERIFY(strHistoryName.LoadString(IDS_EDIT_MODIFY_TIME));
+    VERIFY(this->AddHistoryUnit(strHistoryName));
+    VERIFY(pCurHistoryUnit = this->GetCurHistoryUnit());
+
+    // 選択されているイベントのうち、最初のイベントの時刻を求める
+    long lFirstTime = 0x7FFFFFFF;
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        forEachEvent(pMIDITrack, pMIDIEvent) {
+            if (this->IsEventSelected(pMIDIEvent)) {
+                long lTime = MIDIEvent_GetTime(pMIDIEvent);
+                if (lTime < lFirstTime) {
+                    lFirstTime = lTime;
+                    break;
+                }
+            }
+        }
+    }
+    long lnn, ldd, lbb, lcc;
+    MIDIData_FindTimeSignature(m_pMIDIData, lFirstTime, &lnn, &ldd, &lbb, &lcc);
+    // 同じイベントを2回移動しないように、選択されているイベントを一時配列に登録する。
+    CPtrArray theTempSelectedEventArray;
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        pMIDITrack->m_lUser1 = 0;
+        forEachEvent(pMIDITrack, pMIDIEvent) {
+            // 選択されているイベントのみ
+            if (this->IsEventSelected(pMIDIEvent)) {
+                // 非結合イベントのみ、結合イベントの場合は前非結合のみ
+                if (MIDIEvent_IsCombined(pMIDIEvent) && pMIDIEvent->m_pPrevCombinedEvent == NULL ||
+                    !MIDIEvent_IsCombined(pMIDIEvent)) {
+                    theTempSelectedEventArray.Add(pMIDIEvent);
+                    pMIDITrack->m_lUser1++;
+                }
+            }
+        }
+    }
+    // EOTの履歴保持(EOTが選択されていない場合のみ)(20081102修正)
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        MIDIEvent* pLastEvent = MIDITrack_GetLastEvent(pMIDITrack);
+        if (pLastEvent && pMIDITrack->m_lUser1 > 0) {
+            if (MIDIEvent_IsEndofTrack(pLastEvent) && !this->IsEventSelected(pLastEvent)) {
+                VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_REMOVEEVENT, pLastEvent));
+                VERIFY(pCloneEvent = ReplaceMIDIEvent(pLastEvent));
+            }
+        }
+    }
+    // 時刻の変更
+    // 一時配列のイベント1個につき1回の移動をかける。
+    INT_PTR lTempSelectedEventArrayCount = theTempSelectedEventArray.GetSize();
+    // SetTimeは同時刻イベントの最後に挿入するため、EOT含め昇順に(20170527修正)
+    // EOTの旧状態保護のため、除去フェーズと挿入フェーズに分離(20170527修正)
+    for (INT_PTR j = 0; j < lTempSelectedEventArrayCount; j++) {
+        pMIDIEvent = (MIDIEvent*)(theTempSelectedEventArray.GetAt(j));
+        pMIDIEvent->m_pUser1 = MIDIEvent_GetParent(pMIDIEvent);
+        VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_REMOVEEVENT, pMIDIEvent));
+        VERIFY(pCloneEvent = MIDIEvent_CreateClone(pMIDIEvent));
+        VERIFY(MIDITrack_RemoveEvent(MIDIEvent_GetParent(pMIDIEvent), pMIDIEvent));
+        theTempSelectedEventArray.SetAt(j, pCloneEvent);
+    }
+    for (INT_PTR j = 0; j < lTempSelectedEventArrayCount; j++) {
+        pCloneEvent = (MIDIEvent*)(theTempSelectedEventArray.GetAt(j));
+        long lTime = MIDIEvent_GetTime(pCloneEvent);
+        lTime += amount;
+        lTime = CLIP(0, lTime, 0x7FFFFFFF);
+        VERIFY(MIDIEvent_SetTime(pCloneEvent, lTime));
+        VERIFY(MIDITrack_InsertEvent((MIDITrack*)(pCloneEvent->m_pUser1), pCloneEvent));
+        VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_INSERTEVENT, pCloneEvent));
+    }
+    theTempSelectedEventArray.RemoveAll();
+    // EOTの履歴保持(EOTが選択されていない場合のみ)(20081102修正)
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        MIDIEvent* pLastEvent = MIDITrack_GetLastEvent(pMIDITrack);
+        if (pLastEvent && pMIDITrack->m_lUser1 > 0) {
+            if (MIDIEvent_IsEndofTrack(pLastEvent) && !this->IsEventSelected(pLastEvent)) {
+                VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_INSERTEVENT, pLastEvent));
+            }
+        }
+        pMIDITrack->m_lUser1 = 0;
+    }
+    this->SetModifiedFlag(TRUE);
+    this->UpdateAllViews(NULL, SEKAIJUDOC_MIDIEVENTCHANGED);
+    m_theCriticalSection.Unlock();
+}
+
 // 『編集(E)』-『音程の変更...』
 void CSekaijuDoc::OnEditKey () {
 

@@ -209,6 +209,8 @@ protected:
 	afx_msg void OnPianoRollOctaveTransposeDown();
 	afx_msg void OnPianoRollChromaticTransposeUp();
 	afx_msg void OnPianoRollChromaticTransposeDown();
+	afx_msg void OnPianoRollShiftLeft();
+	afx_msg void OnPianoRollShiftRight();
 
 	afx_msg void OnTrackComboSelEndOK ();	
 	afx_msg void OnTrackListChkChange ();

@@ -18,6 +18,7 @@ The `master` branch additionally includes the following QOL features:
 
 - Ctrl+Up/Down transposes selected notes by an octave
 - Shift+Up/Down transposes selected notes chromatically by one semitone
+- Shift+Left/Right shifts selected notes by the current snap amount
 - Alt+Up/Down transposes selected notes diatonically based on MIDI key
   signature events
 - Roland SC-55 instrument file is included as part of the distribution
