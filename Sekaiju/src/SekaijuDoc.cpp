@@ -6310,6 +6310,53 @@ void CSekaijuDoc::FlipSelectedNotesVertical() {
     m_theCriticalSection.Unlock();
 }
 
+void CSekaijuDoc::FlipSelectedNotesHorizontal() {
+    CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp();
+    m_theCriticalSection.Lock();
+    MIDITrack* pMIDITrack = NULL;
+    MIDIEvent* pMIDIEvent = NULL;
+    MIDIEvent* pCloneEvent = NULL;
+    CHistoryUnit* pCurHistoryUnit = NULL;
+    CString strHistoryName;
+    VERIFY(strHistoryName.LoadString(IDS_EDIT_MODIFY_TIME));
+    VERIFY(this->AddHistoryUnit(strHistoryName));
+    VERIFY(pCurHistoryUnit = this->GetCurHistoryUnit());
+
+    long min_time = 0x7fffffff;
+    long max_time = 0;
+    std::vector<MIDIEvent*> clone_events;
+
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        forEachEvent(pMIDITrack, pMIDIEvent) {
+            if (this->IsEventSelected(pMIDIEvent) && MIDIEvent_IsNoteOn(pMIDIEvent) && MIDIEvent_IsCombined(pMIDIEvent)) {
+                long t = MIDIEvent_GetTime(pMIDIEvent);
+
+                if (t > max_time) {
+                    max_time = t;
+                }
+                if (t < min_time) {
+                    min_time = t;
+                }
+
+                VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_REMOVEEVENT, pMIDIEvent));
+                VERIFY(pCloneEvent = ReplaceMIDIEvent(pMIDIEvent));
+                clone_events.push_back(pCloneEvent);
+                pMIDIEvent = pCloneEvent;
+            }
+        }
+    }
+
+    for (MIDIEvent* e : clone_events) {
+        long t0 = MIDIEvent_GetTime(e);
+        MIDIEvent_SetTime((e), max_time - (t0 - min_time));
+        VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_INSERTEVENT, e));
+    }
+
+    this->SetModifiedFlag(TRUE);
+    this->UpdateAllViews(NULL, SEKAIJUDOC_MIDIEVENTCHANGED);
+    m_theCriticalSection.Unlock();
+}
+
 // 『編集(E)』-『音程の変更...』
 void CSekaijuDoc::OnEditKey () {
 
