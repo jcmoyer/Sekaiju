@@ -21,6 +21,7 @@ The `master` branch additionally includes the following QOL features:
 - Shift+Left/Right shifts selected notes by the current snap amount
 - Alt+Up/Down transposes selected notes diatonically based on MIDI key
   signature events
+- F vertically flips selected notes
 - Roland SC-55 instrument file is included as part of the distribution
 
 # Building

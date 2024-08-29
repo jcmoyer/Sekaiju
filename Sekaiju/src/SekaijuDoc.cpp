@@ -6265,6 +6265,51 @@ void CSekaijuDoc::ShiftSelectedNotes(long amount) {
     m_theCriticalSection.Unlock();
 }
 
+void CSekaijuDoc::FlipSelectedNotesVertical() {
+    long min_pitch = 256;
+    long max_pitch = -1;
+
+    CSekaijuApp* pSekaijuApp = (CSekaijuApp*)AfxGetApp();
+    m_theCriticalSection.Lock();
+    MIDITrack* pMIDITrack = NULL;
+    MIDIEvent* pMIDIEvent = NULL;
+    MIDIEvent* pCloneEvent = NULL;
+    CHistoryUnit* pCurHistoryUnit = NULL;
+    CString strHistoryName;
+    VERIFY(strHistoryName.LoadString(IDS_EDIT_MODIFY_KEY));
+    VERIFY(this->AddHistoryUnit(strHistoryName));
+    VERIFY(pCurHistoryUnit = this->GetCurHistoryUnit());
+
+    std::vector<MIDIEvent*> clone_events;
+
+    forEachTrack(m_pMIDIData, pMIDITrack) {
+        forEachEvent(pMIDITrack, pMIDIEvent) {
+            if (this->IsEventSelected(pMIDIEvent)) {
+                long pitch = MIDIEvent_GetKey(pMIDIEvent);
+                if (pitch > max_pitch) {
+                    max_pitch = pitch;
+                }
+                if (pitch < min_pitch) {
+                    min_pitch = pitch;
+                }
+                VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_REMOVEEVENT, pMIDIEvent));
+                VERIFY(pCloneEvent = ReplaceMIDIEvent(pMIDIEvent));
+                clone_events.push_back(pCloneEvent);
+                VERIFY(pCurHistoryUnit->AddHistoryRecord(HISTORYRECORD_INSERTEVENT, pCloneEvent));
+                pMIDIEvent = pCloneEvent;
+            }
+        }
+    }
+
+    for (MIDIEvent* e : clone_events) {
+        MIDIEvent_SetKey(e, max_pitch - (MIDIEvent_GetKey(e) - min_pitch));
+    }
+
+    this->SetModifiedFlag(TRUE);
+    this->UpdateAllViews(NULL, SEKAIJUDOC_MIDIEVENTCHANGED);
+    m_theCriticalSection.Unlock();
+}
+
 // 『編集(E)』-『音程の変更...』
 void CSekaijuDoc::OnEditKey () {
 

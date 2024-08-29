@@ -191,6 +191,7 @@ public:
 	void TransposeSelectedNotes(long amount, bool note_on_off, bool key_after_touch);
 	void DiatonicTransposeSelectedNotes(long amount, bool note_on_off, bool key_after_touch);
 	void ShiftSelectedNotes(long amount);
+	void FlipSelectedNotesVertical();
 
 	//--------------------------------------------------------------------------
 	// メッセージマップ

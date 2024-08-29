@@ -181,6 +181,7 @@ BEGIN_MESSAGE_MAP(CPianoRollFrame, CChildFrame)
 	ON_COMMAND(ID_PIANOROLL_CHROMATIC_TRANSPOSE_DOWN, OnPianoRollChromaticTransposeDown)
 	ON_COMMAND(ID_PIANOROLL_SHIFT_LEFT, OnPianoRollShiftLeft)
 	ON_COMMAND(ID_PIANOROLL_SHIFT_RIGHT, OnPianoRollShiftRight)
+	ON_COMMAND(ID_PIANOROLL_FLIP_VERTICAL, OnPianoRollFlipVertical)
 
 	ON_COMMAND (ID_POPUP_TRACKVISIBLEON, OnPopupTrackVisibleOn)
 	ON_UPDATE_COMMAND_UI (ID_POPUP_TRACKVISIBLEON, OnUpdatePopupTrackVisibleOnUI)
@@ -2656,6 +2657,11 @@ void CPianoRollFrame::OnPianoRollShiftLeft() {
 void CPianoRollFrame::OnPianoRollShiftRight() {
 	CSekaijuDoc* pSekaijuDoc = GetDocument();
 	pSekaijuDoc->ShiftSelectedNotes(GetCurSnap());
+}
+
+void CPianoRollFrame::OnPianoRollFlipVertical() {
+	CSekaijuDoc* pSekaijuDoc = GetDocument();
+	pSekaijuDoc->FlipSelectedNotesVertical();
 }
 
 // トラックコンボが選択され終わった時
